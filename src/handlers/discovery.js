@@ -13,7 +13,7 @@ const TABLE_NAME = 'DYNAMO_TABLE_NAME';
 function getDevicesFromDynamo() {
   return new Promise((resolve, reject) => {
     dynamo.scan({ TableName: TABLE_NAME }, (err, data) => {
-      return err ? reject(err) : resolve(data);
+      return err ? reject(err) : resolve(data.Items);
     });
   });
 }
