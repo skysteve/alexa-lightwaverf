@@ -20,7 +20,12 @@ exports.handler = function handler(event, context, callback) {
    * the customer.
    */
     case 'Alexa.ConnectedHome.Discovery':
-      handleDiscovery(event, context, callback);
+      handleDiscovery(event, context)
+        .then(result => callback(null, result))
+        .catch((ex) => {
+          log('Failed discovery', ex);
+          callback(ex);
+        });
       break;
   /**
    * The namespace of "Control" indicates a request is being made to us to turn a
@@ -28,7 +33,12 @@ exports.handler = function handler(event, context, callback) {
    * parameter which indicates the appliance that needs to be acted on.
    */
     case 'Alexa.ConnectedHome.Control':
-      handleControl(event, context);
+      handleControl(event, context)
+        .then(result => callback(null, result))
+        .catch((ex) => {
+          log('Failed control', ex);
+          callback(ex);
+        });
       break;
   /**
    * We received an unexpected message

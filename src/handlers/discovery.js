@@ -23,7 +23,7 @@ function getDevicesFromDynamo() {
  * We are expected to respond back with a list of appliances that we have discovered for a given
  * customer.
  */
-export default function (accessToken, context, done) {
+export default function () {
   /**
    * Crafting the response header
    */
@@ -39,7 +39,7 @@ export default function (accessToken, context, done) {
    */
   const arrDevices = [];
 
-  getDevicesFromDynamo()
+  return getDevicesFromDynamo()
     .then((roomsList) => {
       roomsList.forEach((room) => {
         const roomId = room.id;
@@ -78,15 +78,11 @@ export default function (accessToken, context, done) {
     })
     .then(() => {
       log('Discovered devices', arrDevices);
-      done(null, {
+      return {
         header,
         payload: {
           discoveredAppliances: arrDevices
         }
-      });
-    })
-    .catch((ex) => {
-      log('Failed discovery', ex);
-      done(ex);
+      };
     });
 }

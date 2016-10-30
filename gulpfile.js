@@ -29,7 +29,8 @@ gulp.task('script', () => {
         include: 'node_modules/**'
       }),
       replace({
-        DYNAMO_TABLE_NAME: process.env.DYNAMO_TABLE_NAME
+        DYNAMO_TABLE_NAME: process.env.DYNAMO_TABLE_NAME,
+        SQS_QUEUE_NAME: process.env.SQS_QUEUE_NAME
       })
     ],
     format: 'cjs',
