@@ -1,4 +1,4 @@
-import { log } from '../utils';
+import { log, createMessageId } from '../utils';
 
 const AWS = require('aws-sdk');
 const doc = require('dynamodb-doc');
@@ -23,14 +23,14 @@ function getDevicesFromDynamo() {
  * We are expected to respond back with a list of appliances that we have discovered for a given
  * customer.
  */
-export default function (accessToken, context, messageID) {
+export default function (accessToken, context, done) {
   /**
    * Crafting the response header
    */
   const header = {
-    messageID,
+    messageID: createMessageId(),
     namespace: 'Alexa.ConnectedHome.Discovery',
-    name: 'LightwaveRFAppliancesResponse',
+    name: 'DiscoverAppliancesResponse',
     payloadVersion: '2'
   };
 
@@ -78,7 +78,7 @@ export default function (accessToken, context, messageID) {
     })
     .then(() => {
       log('Discovered devices', arrDevices);
-      context.succeed({
+      done(null, {
         header,
         payload: {
           discoveredAppliances: arrDevices
@@ -87,6 +87,6 @@ export default function (accessToken, context, messageID) {
     })
     .catch((ex) => {
       log('Failed discovery', ex);
-      context.fail(ex);
+      done(ex);
     });
 }

@@ -9,7 +9,7 @@ import handleDiscovery from './handlers/discovery';
  * Main entry point.
  * Incoming events from Alexa Lighting APIs are processed via this method.
  */
-exports.handler = function handler(event, context) {
+exports.handler = function handler(event, context, callback) {
   log('Input', event);
 
   switch (event.header.namespace) {
@@ -20,7 +20,7 @@ exports.handler = function handler(event, context) {
    * the customer.
    */
     case 'Alexa.ConnectedHome.Discovery':
-      handleDiscovery(event, context, event.header.messageID);
+      handleDiscovery(event, context, callback);
       break;
   /**
    * The namespace of "Control" indicates a request is being made to us to turn a
