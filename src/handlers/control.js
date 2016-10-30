@@ -26,7 +26,7 @@ function createConfirmation(type) {
 function sendSqsMsg(body) {
   log('Send SQS', body);
   const msg = {
-    MessageBody: body,
+    MessageBody: JSON.stringify(body),
     QueueUrl: queueName
   };
 
