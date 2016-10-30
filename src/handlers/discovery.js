@@ -64,7 +64,7 @@ export default function () {
             manufacturerName: MANUFACTURER,
             modelName: device.type,
             version: '1.0',
-            friendlyName: `${roomName}: ${device.name}`,
+            friendlyName: `${roomName} ${device.name}`,
             friendlyDescription: `${roomName}: ${device.name}`,
             isReachable: true,
             additionalApplianceDetails: {
