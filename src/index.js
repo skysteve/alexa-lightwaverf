@@ -19,7 +19,7 @@ exports.handler = function handler(event, context) {
    * can use the accessToken that is made available as part of the payload to determine
    * the customer.
    */
-    case 'Discovery':
+    case 'Alexa.ConnectedHome.Discovery':
       handleDiscovery(event, context, event.header.messageID);
       break;
   /**
@@ -27,7 +27,7 @@ exports.handler = function handler(event, context) {
    * given device on, off or brighten. This message comes with the "appliance"
    * parameter which indicates the appliance that needs to be acted on.
    */
-    case 'Control':
+    case 'Alexa.ConnectedHome.Control':
       handleControl(event, context);
       break;
   /**
