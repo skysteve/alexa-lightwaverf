@@ -3,11 +3,9 @@
  */
 import { log, createMessageId } from '../utils';
 
-const AWS = require('aws-sdk');
+const https = require('https');
 
-const SQS = new AWS.SQS({ apiVersion: '2012-11-05' });
-
-const queueName = 'SQS_QUEUE_NAME';
+const endpoint = 'POST_ENDPOINT';
 
 function createConfirmation(type) {
   log('send confirmation', type);
@@ -23,51 +21,65 @@ function createConfirmation(type) {
   };
 }
 
-function sendSqsMsg(body) {
-  log('Send SQS', body);
-  const msg = {
-    MessageBody: JSON.stringify(body),
-    QueueUrl: queueName
-  };
-
+function sendPostMsg(msg) {
   return new Promise((resolve, reject) => {
-    SQS.sendMessage(msg, (err) => {
-      return err ? reject(err) : resolve();
-    });
+    try {
+      const postData = JSON.stringify({
+        text: `@hugo ${msg}`
+      });
+
+      const postOptions = {
+        host: endpoint.substring(0, endpoint.indexOf('/')),
+        port: '443',
+        path: endpoint.substring(endpoint.indexOf('/')),
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(postData)
+        }
+      };
+
+      let response = '';
+
+      const postReq = https.request(postOptions, (res) => {
+        res.setEncoding('utf8');
+        res.on('data', (chunk) => {
+          response += chunk;
+        });
+
+        res.on('end', () => {
+          resolve(response);
+        });
+      });
+
+      // post the data
+      postReq.write(postData);
+      postReq.end();
+    } catch (ex) {
+      reject(ex);
+    }
   });
 }
 
 function turnOnDevice(roomId, deviceId) {
-  const msg = {
-    command: 'deviceOn',
-    room: roomId,
-    device: deviceId
-  };
+  const msg = `turn deviceOn R${roomId} D${deviceId}`;
 
-  return sendSqsMsg(msg)
+  return sendPostMsg(msg)
     .then(() => createConfirmation('TurnOnConfirmation'));
 }
 
 function turnOffDevice(roomId, deviceId) {
-  const msg = {
-    command: 'deviceOff',
-    room: roomId,
-    device: deviceId
-  };
+  const msg = `turn deviceOff R${roomId} D${deviceId}`;
 
-  return sendSqsMsg(msg)
+
+  return sendPostMsg(msg)
     .then(() => createConfirmation('TurnOffConfirmation'));
 }
 
 function setDimLevel(roomId, deviceId, dimLevel) {
-  const msg = {
-    command: 'dim',
-    room: roomId,
-    device: deviceId,
-    level: dimLevel
-  };
+  const msg = `dim R${roomId} D${deviceId} L${dimLevel}`;
 
-  return sendSqsMsg(msg)
+  return sendPostMsg(msg)
     .then(() => createConfirmation('SetPercentageConfirmation'));
 }
 
